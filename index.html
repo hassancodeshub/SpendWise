@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- app wrapper -->
+    <div id="app">
+        
+        <!-- header section -->
+        <header class="header">
+            <div class="header-left">
+                <h1>Expense Tracker</h1>
+            </div>
+            <!-- Sam: moved these buttons to a group so they align better on mobile -->
+            <div class="header-right">
+                <button id="themeToggle" class="btn-icon" title="Toggle Theme">Dark</button>
+                <button id="exportBtn" class="btn-icon" title="Export Data">Export</button>
+                <!-- hidden file input for import -->
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <button id="importBtn" class="btn-icon" title="Import Data">Import</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- top stats dashboard -->
+            <section class="dashboard">
+                <div class="stat-card income">
+                    <div class="stat-info">
+                        <h4>Total Income</h4>
+                        <p class="stat-amount" id="totalIncome">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card expense">
+                    <div class="stat-info">
+                        <h4>Total Expenses</h4>
+                        <p class="stat-amount" id="totalExpenses">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card balance">
+                    <div class="stat-info">
+                        <h4>Net Balance</h4>
+                        <p class="stat-amount" id="netBalance">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card transactions">
+                    <div class="stat-info">
+                        <h4>Transactions</h4>
+                        <p class="stat-amount" id="transactionCount">0</p>
+                        <span class="stat-change">All time</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
