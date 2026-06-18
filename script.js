@@ -92,6 +92,23 @@ const App = {
         return { totalIncome, totalExpenses, netBalance: totalIncome - totalExpenses };
     },
 
+     render() {
+        this.renderDashboard();
+    },
+
+    renderDashboard() {
+        const stats = this.getStats(this.transactions);
+        document.getElementById('totalIncome').textContent = `${this.settings.currency}${stats.totalIncome.toLocaleString()}`;
+        document.getElementById('totalExpenses').textContent = `${this.settings.currency}${stats.totalExpenses.toLocaleString()}`;
+        
+        const balEl = document.getElementById('netBalance');
+        balEl.textContent = `${this.settings.currency}${stats.netBalance.toLocaleString()}`;
+        balEl.className = stats.netBalance >= 0 ? 'stat-amount positive' : 'stat-amount negative';
+        document.getElementById('transactionCount').textContent = this.transactions.length;
+    }
+    
+    // [FUTURE JS METHODS GO HERE]
+
 };
 
 // boot it up
