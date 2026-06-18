@@ -1,70 +1,135 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Expense Tracker</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <!-- app wrapper -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
     <div id="app">
-      <!-- header section -->
-      <header class="header">
-        <div class="header-left">
-          <h1>Expense Tracker</h1>
-        </div>
-        <div class="header-right">
-          <button id="themeToggle" class="btn-icon" title="Toggle Theme">
-            Dark
-          </button>
-          <button id="exportBtn" class="btn-icon" title="Export Data">
-            Export
-          </button>
-          <!-- hidden file input for import -->
-          <input
-            type="file"
-            id="importFile"
-            accept=".json"
-            style="display: none"
-          />
-          <button id="importBtn" class="btn-icon" title="Import Data">
-            Import
-          </button>
-        </div>
-      </header>
+        
+        <header class="header">
+            <div class="header-left">
+                <h1>Expense Tracker</h1>
+            </div>
+            <div class="header-right">
+                <button id="themeToggle" class="btn-icon" title="Toggle Theme">Dark</button>
+                <button id="exportBtn" class="btn-icon" title="Export Data">Export</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <button id="importBtn" class="btn-icon" title="Import Data">Import</button>
+            </div>
+        </header>
 
-      <main class="main-content">
-        <!-- top stats dashboard -->
-        <section class="dashboard">
-          <div class="stat-card income">
-            <div class="stat-info">
-              <h4>Total Income</h4>
-              <p class="stat-amount" id="totalIncome">₹0</p>
-            </div>
-          </div>
-          <div class="stat-card expense">
-            <div class="stat-info">
-              <h4>Total Expenses</h4>
-              <p class="stat-amount" id="totalExpenses">₹0</p>
-            </div>
-          </div>
-          <div class="stat-card balance">
-            <div class="stat-info">
-              <h4>Net Balance</h4>
-              <p class="stat-amount" id="netBalance">₹0</p>
-            </div>
-          </div>
-          <div class="stat-card transactions">
-            <div class="stat-info">
-              <h4>Transactions</h4>
-              <p class="stat-amount" id="transactionCount">0</p>
-              <span class="stat-change">All time</span>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+        <main class="main-content">
+            <section class="dashboard">
+                <div class="stat-card income">
+                    <div class="stat-info">
+                        <h4>Total Income</h4>
+                        <p class="stat-amount" id="totalIncome">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card expense">
+                    <div class="stat-info">
+                        <h4>Total Expenses</h4>
+                        <p class="stat-amount" id="totalExpenses">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card balance">
+                    <div class="stat-info">
+                        <h4>Net Balance</h4>
+                        <p class="stat-amount" id="netBalance">₹0</p>
+                    </div>
+                </div>
+                <div class="stat-card transactions">
+                    <div class="stat-info">
+                        <h4>Transactions</h4>
+                        <p class="stat-amount" id="transactionCount">0</p>
+                        <span class="stat-change">All time</span>
+                    </div>
+                </div>
+            </section>
+            <section class="transaction-form-section">
+                <h2>Add Transaction</h2>
+                <form id="transactionForm" class="transaction-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select id="type" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" required>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Rent">Rent</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Health">Health</option>
+                                <option value="Education">Education</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Freelance">Freelance</option>
+                                <option value="Investment">Investment</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount (₹)</label>
+                            <input type="number" id="amount" placeholder="0.00" required min="0.01" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentMethod">Payment Method</label>
+                            <select id="paymentMethod">
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Card">Card</option>
+                                <option value="Bank">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input type="text" id="description" placeholder="What was this for?" required>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="notes">Notes (Optional)</label>
+                        <textarea id="notes" placeholder="Add any additional notes..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Transaction</button>
+                </form>
+            </section>
+            
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>All Transactions</h2>
+                    <div class="filter-controls">
+                        <input type="text" id="searchInput" placeholder="Search transactions..." class="search-input">
+                        <select id="filterType" class="filter-select">
+                            <option value="all">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                        <select id="filterCategory" class="filter-select">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="transactionList" class="transaction-list"></div>
+            </section>
+            </main>
+        
+        </div>
+    
     <script src="script.js"></script>
-  </body>
+</body>
 </html>
