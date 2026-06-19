@@ -107,6 +107,49 @@ const App = {
         document.getElementById('transactionCount').textContent = this.transactions.length;
     }
     
+    ,
+    editTransaction(id, updates) {
+        const index = this.transactions.findIndex(t => t.id === id);
+        if (index === -1) return;
+        this.transactions[index] = { ...this.transactions[index], ...updates, updatedAt: new Date().toISOString() };
+        this.saveData();
+        this.render();
+        this.showToast('Updated successfully!', 'success');
+    },
+
+    showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    },
+
+    openEditModal(id) {
+        const t = this.getTransaction(id);
+        if (!t) return;
+        document.getElementById('editModal').classList.add('active');
+        document.getElementById('editId').value = t.id;
+        document.getElementById('editType').value = t.type;
+        document.getElementById('editCategory').value = t.category;
+        document.getElementById('editAmount').value = t.amount;
+        document.getElementById('editDate').value = t.date;
+        document.getElementById('editDescription').value = t.description;
+        document.getElementById('editPaymentMethod').value = t.paymentMethod || 'Cash';
+        document.getElementById('editNotes').value = t.notes || '';
+    },
+    
+    openBudgetModal() { document.getElementById('budgetModal').classList.add('active'); },
+    openGoalModal() { document.getElementById('goalModal').classList.add('active'); },
+    
+    openAddFundsModal(goalId) {
+        document.getElementById('fundGoalId').value = goalId;
+        document.getElementById('fundAmount').value = '';
+        document.getElementById('addFundsModal').classList.add('active');
+    }
+
     // [FUTURE JS METHODS GO HERE]
 
 };
