@@ -8,6 +8,8 @@ const App = {
     init() {
         this.loadData();
         this.applyTheme();
+        this.render();
+        this.showToast('App Loaded successfully!','success');
         console.log("App booted up.");
     },
     
