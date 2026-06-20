@@ -194,7 +194,6 @@ Get personalized spending recommendations:
 - AI-powered spending recommendations
 - Receipt scanning with OCR
 - Shared roommate expense tracking
-- Savings goals
 - Progressive Web App (PWA)
 - Cloud sync and authentication
 
@@ -208,10 +207,6 @@ Get personalized spending recommendations:
 > Student Survival Tracker tells them whether they'll survive until the end of the month.
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License.
 
 ---
 
