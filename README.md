@@ -200,17 +200,6 @@ Get personalized spending recommendations:
 
 ---
 
-## 📸 Screenshots
-
-Add application screenshots here.
-
-```markdown
-![Dashboard](screenshots/dashboard.png)
-![Analytics](screenshots/analytics.png)
-![Affordability Checker](screenshots/affordability.png)
-```
-
----
 
 ## 🏆 Hackathon Pitch
 
