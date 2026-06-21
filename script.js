@@ -231,5 +231,367 @@ window.killGoal = function(id) {
     }
 };
 
+function buildInsights() {
+    var wrap = document.getElementById('insights-container');
+    var m = new Date().getMonth();
+    var y = new Date().getFullYear();
+    var inc=parseFloat(db_state.prof.budget_base), exp=0;
+    
+    var zomato_tax = 0;
+    db_state.txs.forEach(t => {
+        let p = t.date.split('-');
+        if(p[1]-1 == m && p[0] == y) {
+            if(t.type=='income') inc += parseFloat(t.amount);
+            else {
+                exp += parseFloat(t.amount);
+                if(t.category == 'Food' || t.title.toLowerCase().includes('zomato') || t.title.toLowerCase().includes('swiggy')) {
+                    zomato_tax += parseFloat(t.amount);
+                }
+            }
+        }
+    });
 
+    var msgs = [];
+    if(exp > inc) msgs.push({c:'danger', t:'Over Budget', p:'You are literally out of money.'});
+    else if(exp/inc > 0.8) msgs.push({c:'warning', t:'Careful', p:'Budget is 80% gone.'});
+    
+    if(zomato_tax > (inc * 0.2) && inc > 0) {
+        msgs.push({c:'warning', t:'Junk Food Alert', p:`You spent ${db_state.prof.curr}${zomato_tax.toFixed(2)} on outside food. Start cooking.`});
+    }
+
+    if(msgs.length==0 && exp>0) msgs.push({c:'success', t:'Looking Good', p:'Finances are stable.'});
+    if(msgs.length==0) { wrap.innerHTML = '<p class="empty-state-small">Need more data to analyze.</p>'; return; }
+    
+    var html = '';
+    for(var k=0; k<msgs.length; k++) {
+        html += `<div class="card insight-card ${msgs[k].c}"><h4>${msgs[k].t}</h4><p>${msgs[k].p}</p></div>`;
+    }
+    wrap.innerHTML = html;
+}
+
+function drawPie() {
+    var can = document.getElementById('categoryChart');
+    if(!can) return;
+    var ctx = can.getContext('2d');
+    ctx.clearRect(0,0,can.width,can.height);
+    
+    var m = new Date().getMonth(); var y = new Date().getFullYear();
+    var cats = {}; var t_exp = 0;
+    
+    for(let i=0; i<db_state.txs.length; i++) {
+        let t = db_state.txs[i];
+        let p = t.date.split('-');
+        if(p[1]-1 == m && p[0] == y && t.type=='expense') {
+            if(!cats[t.category]) cats[t.category] = 0;
+            cats[t.category] += parseFloat(t.amount);
+            t_exp += parseFloat(t.amount);
+        }
+    }
+    
+    var arr = Object.keys(cats).map(function(k){ return {n:k, v:cats[k]}; });
+    arr.sort(function(a,b){ return b.v - a.v; });
+    
+    if(arr.length==0) {
+        ctx.fillStyle = '#8AAB9E'; ctx.fillText("No data", 10, 20);
+        document.getElementById('velocity-stats').innerHTML = '';
+        return;
+    }
+    
+    var max = arr[0].v;
+    var w = (can.width / arr.length) - 10;
+    
+    for(let i=0; i<arr.length; i++) {
+        var h = (arr[i].v / max) * (can.height - 40);
+        ctx.fillStyle = '#00C896';
+        ctx.fillRect(i*(w+10)+5, can.height - 30 - h, w, h);
+        ctx.fillStyle = '#E0F2EC';
+        ctx.font = '10px Arial';
+        ctx.fillText(arr[i].n.substring(0,5), i*(w+10)+5, can.height - 10);
+    }
+    
+    var v = t_exp / new Date().getDate();
+    document.getElementById('velocity-stats').innerHTML = `
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding:8px 0;">
+            <span>Daily Burn</span><strong>${db_state.prof.curr}${v.toFixed(2)}/day</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:8px 0;">
+            <span>Top Category</span><strong>${arr[0].n} (${db_state.prof.curr}${arr[0].v.toFixed(2)})</strong>
+        </div>
+    `;
+}
+
+function setupAllTheEvents() {
+    if(isSetupDone) { forceUIUpdate(); return; }
+    
+    var navs = document.querySelectorAll('.nav-item');
+    for(var i=0; i<navs.length; i++) {
+        navs[i].onclick = function() {
+            if(this.id == 'btn-logout') {
+                document.getElementById('secure-app-wrapper').style.visibility = 'hidden';
+                document.getElementById('login-overlay').classList.add('active');
+                document.getElementById('auth-form').classList.remove('hidden');
+                document.getElementById('setup-form').classList.add('hidden');
+                return;
+            }
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            this.classList.add('active');
+            var trg = this.getAttribute('data-target');
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + trg).classList.add('active');
+            
+            if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('afford-result').classList.add('hidden');
+            
+            if(trg == 'insights') buildInsights();
+            if(trg == 'analytics') drawPie();
+            if(trg == 'goals') buildGoalsUI();
+        }
+    }
+
+    document.getElementById('toggle-sidebar').onclick = function() {
+        if(window.innerWidth <= 768) document.getElementById('sidebar').classList.toggle('open');
+        else document.getElementById('sidebar').classList.toggle('collapsed');
+    };
+
+    window.addEventListener('keydown', function(e) {
+        if(e.key == 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+    });
+
+    var todayStr = new Date().toISOString().split('T')[0];
+    
+    function openExp() {
+        document.getElementById('expense-form').reset();
+        document.getElementById('exp-date').value = todayStr;
+        document.getElementById('expense-modal').classList.add('active');
+    }
+    var headBtn = document.getElementById('btn-add-expense-header');
+    if(headBtn) headBtn.onclick = openExp;
+    document.getElementById('btn-add-expense-main').onclick = openExp;
+
+    function openFund() {
+        document.getElementById('funds-form').reset();
+        document.getElementById('fund-date').value = todayStr;
+        document.getElementById('funds-modal').classList.add('active');
+    }
+    document.getElementById('btn-add-funds').onclick = openFund;
+    document.getElementById('btn-add-funds-main').onclick = openFund;
+
+    document.getElementById('btn-add-goal').onclick = function() {
+        document.getElementById('goal-form').reset();
+        var d = new Date(); d.setMonth(d.getMonth()+1);
+        document.getElementById('goal-deadline').value = d.toISOString().split('T')[0];
+        document.getElementById('goal-modal').classList.add('active');
+    };
+
+    document.querySelectorAll('.close-modal').forEach(b => {
+        b.onclick = function() { this.closest('.modal-overlay').classList.remove('active'); }
+    });
+
+    document.getElementById('expense-form').onsubmit = function(e) {
+        e.preventDefault();
+        var amt = parseFloat(document.getElementById('exp-amount').value);
+        if(isNaN(amt) || amt <= 0) return showMsg("Bad amount", "error");
+        
+        var cm = new Date().getMonth();
+        var cy = new Date().getFullYear();
+        var total_in = parseFloat(db_state.prof.budget_base);
+        var total_kharcha = 0;
+        
+        for(let j=0; j<db_state.txs.length; j++) {
+            let parts = db_state.txs[j].date.split('-');
+            if(parseInt(parts[1])-1 == cm && parseInt(parts[0]) == cy) {
+                if(db_state.txs[j].type == 'income') total_in += parseFloat(db_state.txs[j].amount);
+                else total_kharcha += parseFloat(db_state.txs[j].amount);
+            }
+        }
+        
+        var left = total_in - total_kharcha;
+        if(amt > left) { return showMsg("You broke! Can't add this.", "error"); }
+
+        db_state.txs.unshift({
+            id: 'x_' + Math.random().toString(36).substr(2) + Date.now(),
+            title: document.getElementById('exp-title').value.replace(/[<>]/g, ""),
+            amount: parseFloat(amt.toFixed(2)),
+            category: document.getElementById('exp-category').value,
+            date: document.getElementById('exp-date').value,
+            notes: document.getElementById('exp-notes').value.replace(/[<>]/g, ""),
+            type: 'expense'
+        });
+        db_state.txs.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+        localStorage.setItem(ST_KEY, JSON.stringify(db_state));
+        document.getElementById('expense-modal').classList.remove('active');
+        showMsg("Expense logged.");
+        forceUIUpdate();
+    };
+
+    document.getElementById('funds-form').onsubmit = function(e) {
+        e.preventDefault();
+        var a = parseFloat(document.getElementById('fund-amount').value);
+        if(isNaN(a) || a<=0) return;
+        db_state.txs.unshift({
+            id: 'y_' + Math.random().toString(36).substr(2),
+            title: document.getElementById('fund-title').value.replace(/[<>]/g, ""),
+            amount: parseFloat(a.toFixed(2)), category: 'Income', type: 'income', notes:'',
+            date: document.getElementById('fund-date').value
+        });
+        db_state.txs.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+        localStorage.setItem(ST_KEY, JSON.stringify(db_state));
+        document.getElementById('funds-modal').classList.remove('active');
+        showMsg("Money added!");
+        forceUIUpdate();
+    };
+
+    document.getElementById('goal-form').onsubmit = function(e) {
+        e.preventDefault();
+        var n = document.getElementById('goal-name').value.replace(/[<>]/g, "");
+        var t = parseFloat(document.getElementById('goal-target').value);
+        var c = parseFloat(document.getElementById('goal-current').value);
+        if(c > t) { showMsg("Current > Target? Weird.", "error"); return; }
+        
+        db_state.gls.push({
+            id: 'g_' + Date.now(), name: n, target: parseFloat(t.toFixed(2)), current: parseFloat(c.toFixed(2)), deadline: document.getElementById('goal-deadline').value
+        });
+        localStorage.setItem(ST_KEY, JSON.stringify(db_state));
+        document.getElementById('goal-modal').classList.remove('active');
+        buildGoalsUI();
+    };
+
+    document.getElementById('settings-form').onsubmit = function(e) {
+        e.preventDefault();
+        db_state.prof.n = document.getElementById('set-name').value.replace(/[<>]/g,"");
+        db_state.prof.curr = document.getElementById('set-currency').value.replace(/[<>]/g,"");
+        var np = document.getElementById('set-pin').value;
+        if(np && np.length==4) db_state.prof.pHash = doHash(np);
+        localStorage.setItem(ST_KEY, JSON.stringify(db_state));
+        showMsg("Saved");
+        document.getElementById('set-pin').value = '';
+        forceUIUpdate();
+    };
+
+    document.getElementById('afford-form').onsubmit = function(e) {
+        e.preventDefault();
+        var item_name = document.getElementById('afford-name').value.replace(/[<>]/g, ""); 
+        var cost = parseFloat(document.getElementById('afford-price').value);
+        var res = document.getElementById('afford-result');
+        
+        var m = new Date().getMonth();
+        var y = new Date().getFullYear();
+        var inc = parseFloat(db_state.prof.budget_base), exp = 0;
+        
+        db_state.txs.forEach(t => {
+            let p = t.date.split('-');
+            if(p[1]-1 == m && p[0] == y) {
+                if(t.type=='income') inc += parseFloat(t.amount);
+                else exp += parseFloat(t.amount);
+            }
+        });
+        var bal = inc - exp;
+        
+        var today = new Date();
+        var days_in_mo = new Date(y, m+1, 0).getDate();
+        var left_days = days_in_mo - today.getDate() + 1;
+        if(left_days < 1) left_days = 1; 
+        
+        var old_pace = bal / left_days;
+        var new_pace = (bal - cost) / left_days;
+        var drop_amt = old_pace - new_pace;
+        var c_sym = db_state.prof.curr;
+        
+        res.className = 'card afford-result';
+        
+        var title = "";
+        var desc = "";
+        var math_html = "";
+        
+        if(cost > bal) {
+            res.classList.add('bg-red');
+            title = "<h3>Nope</h3>";
+            desc = "<p>You literally don't have enough money for <b>" + item_name + "</b> right now.</p>";
+        } else {
+            if(new_pace < (old_pace * 0.5)) {
+                res.classList.add('bg-yellow');
+                title = "<h3>Risky Purchase</h3>";
+                desc = "<p>Buying <b>" + item_name + "</b> will cut your daily allowance by more than half. Survive on Maggi?</p>";
+            } else {
+                res.classList.add('bg-green');
+                title = "<h3>Go For It</h3>";
+                desc = "<p>You can buy <b>" + item_name + "</b> and still survive the month.</p>";
+            }
+
+            math_html = `
+                <div class="math-breakdown" style="margin-top: 15px; padding: 15px; background: var(--bg-dark); border: 1px dashed var(--border-color); border-radius: 8px; text-align: left; font-family: monospace; font-size: 0.9rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                        <span>Current Limit:</span>
+                        <strong>${c_sym}${old_pace.toFixed(2)} / day</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 8px; color: var(--danger);">
+                        <span>Cost of ${item_name}:</span>
+                        <strong>- ${c_sym}${cost.toFixed(2)}</strong>
+                    </div>
+                    <hr style="border:0; border-top: 1px dashed var(--border-color); margin: 10px 0;">
+                    <div style="display:flex; justify-content:space-between; color: var(--emerald);">
+                        <span>New Daily Limit:</span>
+                        <strong>${c_sym}${new_pace.toFixed(2)} / day</strong>
+                    </div>
+                    <div style="text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                        (Drops by ${c_sym}${drop_amt.toFixed(2)} per day for the next ${left_days} days)
+                    </div>
+                </div>
+            `;
+        }
+        
+        res.innerHTML = title + desc + math_html;
+        res.classList.remove('hidden');
+    };
+
+    document.getElementById('btn-export').onclick = function(){
+        var b = new Blob([JSON.stringify(db_state, null, 2)], {type:"application/json"});
+        var a = document.createElement('a'); a.href = URL.createObjectURL(b);
+        a.download = "SpendWise_DUMP.json"; a.click();
+        URL.revokeObjectURL(a.href);
+    };
+
+    document.getElementById('btn-trigger-import').onclick = function(){ document.getElementById('file-import').click(); };
+    document.getElementById('file-import').onchange = function(e) {
+        var r = new FileReader();
+        r.onload = function(ev) {
+            try {
+                var test = JSON.parse(ev.target.result);
+                if(test.prof && test.txs) {
+                    db_state = test;
+                    localStorage.setItem(ST_KEY, JSON.stringify(db_state));
+                    location.reload();
+                } else {
+                    showMsg("Invalid file format", "error");
+                }
+            } catch(err) { showMsg("Bad file", "error"); }
+        };
+        r.readAsText(e.target.files[0]);
+    };
+
+    document.getElementById('btn-reset').onclick = function(){
+        if(confirm("WIPE EVERYTHING?")) { localStorage.removeItem(ST_KEY); location.reload(); }
+    };
+    
+    document.getElementById('btn-view-all').onclick = function(){ document.querySelector('[data-target="transactions"]').click(); };
+
+    document.getElementById('finance-tip-text').innerText = getTip();
+    isSetupDone = true;
+    forceUIUpdate();
+}
+
+window.onload = function() {
+    var raw = localStorage.getItem(ST_KEY);
+    if(raw) {
+        db_state = JSON.parse(raw);
+        if(!db_state.gls) db_state.gls = []; 
+    } else {
+        db_state = { v: '2.1', prof: {n: '', budget_base: 0, curr: '₹', pHash: ''}, txs: [], gls: [] };
+    }
+    startAppFlow();
+};
+            
                                 
