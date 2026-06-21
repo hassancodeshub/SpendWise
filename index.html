@@ -44,5 +44,162 @@
             </form>
         </div>
     </div>
+
+    <div class="app-container" id="secure-app-wrapper" style="visibility: hidden; opacity: 0;">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h2>SpendWise</h2>
+            </div>
+            <nav class="nav-menu" id="nav-menu">
+                <button class="nav-item active" data-target="dashboard">Dashboard</button>
+                <button class="nav-item" data-target="transactions">Transactions</button>
+                <button class="nav-item" data-target="goals">Savings Goals</button>
+                <button class="nav-item" data-target="afford">Can I Afford This?</button>
+                <button class="nav-item" data-target="analytics">Analytics</button>
+                <button class="nav-item" data-target="insights">Smart Insights</button>
+                <button class="nav-item" data-target="settings">Settings</button>
+                <div style="flex-grow: 1;"></div>
+                <button class="nav-item btn-danger-text" id="btn-logout" style="margin-top: auto;">Lock App</button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div style="display: flex; align-items: center; gap: 16px; min-width: 0;">
+                    <button class="menu-btn always-visible" id="toggle-sidebar" aria-label="Toggle menu">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                    </button>
+                    <div class="header-titles">
+                        <h1 id="greeting" class="truncate-text">Hello</h1>
+                        <p class="current-month" id="current-month-display">Current Month</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="btn-add-expense-header">+ Add Expense</button>
+                </div>
+            </header>
+
+            <div id="views-container">
+                <section class="view active" id="view-dashboard">
+                    <div class="metrics-grid">
+                        <div class="card metric-card">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <h3>Total Budget Pool</h3>
+                                <button class="btn btn-secondary" style="padding: 4px 8px; min-height: 0; font-size: 0.75rem;" id="btn-add-funds">+ Add Funds</button>
+                            </div>
+                            <div class="value truncate-text" id="dash-budget">0.00</div>
+                        </div>
+                        <div class="card metric-card">
+                            <h3>Amount Spent</h3>
+                            <div class="value truncate-text" id="dash-spent">0.00</div>
+                        </div>
+                        <div class="card metric-card" id="dash-remaining-card">
+                            <h3>Remaining Balance</h3>
+                            <div class="value truncate-text" id="dash-remaining">0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="survival-grid">
+                        <div class="card survival-card">
+                            <h3>Safe Weekly Budget</h3>
+                            <div class="value mint truncate-text" id="dash-safe-weekly">0.00</div>
+                            <p>To last the month</p>
+                        </div>
+                        <div class="card survival-card">
+                            <h3>Safe Daily Limit</h3>
+                            <div class="value emerald truncate-text" id="dash-safe-daily">0.00</div>
+                            <p>Spend this much today safely</p>
+                        </div>
+                        <div class="card survival-card">
+                            <h3>No Spend Days</h3>
+                            <div class="value" id="dash-no-spend">0</div>
+                            <p>Days with 0 spending</p>
+                        </div>
+                    </div>
+
+                    <div class="card progress-section">
+                        <h3>Monthly Budget Progress</h3>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="dash-progress-bar"></div>
+                        </div>
+                        <p class="progress-text" id="dash-progress-text">0% utilized</p>
+                    </div>
+
+                    <div class="content-grid">
+                        <div class="card recent-expenses">
+                            <div class="card-header">
+                                <h3>Recent Transactions</h3>
+                                <button class="btn btn-text" id="btn-view-all">View All</button>
+                            </div>
+                            <div class="expense-list" id="dash-expense-list"></div>
+                        </div>
+                        <div class="side-info">
+                            <div class="card tip-card">
+                                <h3>Finance Tip</h3>
+                                <p id="finance-tip-text">Loading tip...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="view" id="view-transactions">
+                    <div class="view-header">
+                        <h2>Transaction Ledger</h2>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" id="btn-add-funds-main">+ Add Funds</button>
+                            <button class="btn btn-primary" id="btn-add-expense-main">+ New Expense</button>
+                        </div>
+                    </div>
+                    <div class="card table-container">
+                        <div id="expenses-full-list" class="expense-list"></div>
+                    </div>
+                </section>
+
+                <section class="view" id="view-goals">
+                    <div class="view-header">
+                        <h2>Savings Goals</h2>
+                        <button class="btn btn-primary" id="btn-add-goal">+ New Goal</button>
+                    </div>
+                    <div class="goals-grid" id="goals-list"></div>
+                </section>
+
+                <section class="view" id="view-afford">
+                    <h2>Can I Afford This?</h2>
+                    <div class="card afford-form-card">
+                        <form id="afford-form">
+                            <div class="form-group">
+                                <label>Item Name</label>
+                                <input type="text" id="afford-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input type="number" id="afford-price" step="0.01" min="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Expected Purchase Date</label>
+                                <input type="date" id="afford-date" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Calculate Impact</button>
+                        </form>
+                    </div>
+                    <div id="afford-result" class="card afford-result hidden"></div>
+                </section>
+
+                <section class="view" id="view-analytics">
+                    <h2>Analytics</h2>
+                    <div class="analytics-grid">
+                        <div class="card">
+                            <h3>Category Breakdown</h3>
+                            <canvas id="categoryChart" width="400" height="250"></canvas>
+                        </div>
+                        <div class="card">
+                            <h3>Spending Velocity</h3>
+                            <div id="velocity-stats" class="stats-list"></div>
+                        </div>
+                    </div>
+                </section>
    </body>
    </html>
