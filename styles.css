@@ -177,3 +177,32 @@ input:focus, select:focus, textarea:focus { border-color: var(--emerald); }
 @keyframes modalScale { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(var(--spacing) * 2.5); }
 .close-modal { font-size: 1.5rem; color: var(--text-muted); }
+
+/* Goals & Other Views */
+.view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(var(--spacing) * 3); flex-wrap: wrap; gap: 16px; }
+.goals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: calc(var(--spacing) * 2); }
+.goal-card { display: flex; flex-direction: column; }
+.goal-card h3 { margin-bottom: calc(var(--spacing) / 2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.goal-meta { font-size: 0.875rem; color: var(--text-muted); margin-bottom: calc(var(--spacing) * 1.5); }
+.goal-stats { display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 8px; }
+
+.afford-form-card, .afford-result { max-width: 600px; margin-bottom: calc(var(--spacing) * 3); }
+.afford-result h3 { font-size: 1.5rem; margin-bottom: var(--spacing); }
+.afford-result p { font-size: 0.95rem; margin-bottom: 8px;}
+.bg-green { border-color: var(--success); } .bg-green h3 { color: var(--success); }
+.bg-yellow { border-color: var(--warning); } .bg-yellow h3 { color: var(--warning); }
+.bg-red { border-color: var(--danger); } .bg-red h3 { color: var(--danger); }
+
+.analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: calc(var(--spacing) * 3); }
+canvas { width: 100%; max-width: 100%; height: auto; }
+.stats-list { margin-top: calc(var(--spacing) * 2); display: flex; flex-direction: column; gap: var(--spacing); font-size: 0.9rem; }
+
+.insights-list { display: flex; flex-direction: column; gap: calc(var(--spacing) * 2); }
+.insight-card { border-left: 4px solid var(--emerald); }
+.insight-card h4 { margin-bottom: 8px; color: var(--text-main); }
+.insight-card p { font-size: 0.9rem; color: var(--text-muted); }
+.insight-card.warning { border-left-color: var(--warning); } .insight-card.warning h4 { color: var(--warning); }
+.insight-card.danger { border-left-color: var(--danger); } .insight-card.danger h4 { color: var(--danger); }
+
+.divider { border: 0; height: 1px; background: var(--border-color); margin: calc(var(--spacing) * 4) 0; }
+.button-group { display: flex; gap: var(--spacing); flex-wrap: wrap; }
