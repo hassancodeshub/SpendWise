@@ -1,0 +1,12 @@
+* [33mf88e00e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m style: enhance dashboard UI with cards, metrics, and modals
+* [33m0e1bf07[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m style(ui): add login overlay, sidebar, and header layout styles
+* [33m27d3cf1[m style: add global theme and base component styles
+* [33m3473ef8[m feat: implement settings, insights, and management modals
+* [33m305fbf9[m feat: build dashboard layout and navigation system
+* [33me71a931[m feat: add PIN-based login and initial setup screen
+* [33m3617630[m remove index.html
+*   [33mddd93cf[m feat: add PIN-based login and initial setup screen
+[32m|[m[33m\[m  
+[32m|[m * [33mb632c57[m feat: insights, afford calculator, charts and event binding hook
+* [33m|[m [33m6700fd6[m feat: add PIN-based login and initial setup screen
+[34m|[m[33m\[m[33m|[m 
