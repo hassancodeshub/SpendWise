@@ -227,16 +227,20 @@
                         </form>
                         <hr class="divider">
                         <div class="data-management">
-    <h3>Data Management</h3>
-    <div class="button-group">
-        <button class="btn btn-secondary" id="btn-export">Export Backup (JSON)</button>
-        <button class="btn btn-secondary" id="btn-export-csv">Export to CSV</button>
-        <button class="btn btn-secondary" id="btn-trigger-import">Import Backup (JSON)</button>
-        <button class="btn btn-secondary" id="btn-trigger-import-csv">Import CSV</button>
-        <button class="btn btn-danger" id="btn-reset">Reset Application</button>
+    <h3 style="margin-bottom: 12px;">Data Management</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <button class="btn btn-secondary w-100" id="btn-export" style="margin: 0;">Export JSON</button>
+        <button class="btn btn-secondary w-100" id="btn-export-csv" style="margin: 0;">Export CSV</button>
+       
+        <button class="btn btn-secondary w-100" id="btn-trigger-import" style="margin: 0;">Import JSON</button>
+        <button class="btn btn-secondary w-100" id="btn-trigger-import-csv" style="margin: 0;">Import CSV</button>
+       
+        <button class="btn btn-danger w-100" id="btn-reset" style="grid-column: span 2; margin: 0;">Reset Application</button>
+       
         <input type="file" id="file-import" accept=".json" class="hidden">
         <input type="file" id="file-import-csv" accept=".csv" class="hidden">
     </div>
+</div>
 </div>
                         </div>
                     </div>

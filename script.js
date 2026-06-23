@@ -574,7 +574,7 @@ function setupAllTheEvents() {
         r.readAsText(e.target.files[0]);
     };
 
-    // --- NEW: CSV Export ---
+        // --- NEW: CSV Export ---
     document.getElementById('btn-export-csv').onclick = function() {
         if (!db_state.txs.length) return showMsg("No data to export", "error");
         var csv = "ID,Type,Title,Amount,Category,Date,Notes\n";
@@ -582,8 +582,15 @@ function setupAllTheEvents() {
             csv += `${t.id},${t.type},"${t.title}",${t.amount},${t.category},${t.date},"${t.notes || ''}"\n`;
         });
         var b = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-        var a = document.createElement('a'); a.href = URL.createObjectURL(b);
-        a.download = "SpendWise_Transactions.csv"; a.click();
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(b);
+        a.download = "SpendWise_Transactions.csv";
+       
+        // Fix: Append to body before clicking so the browser allows the download
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+       
         URL.revokeObjectURL(a.href);
     };
 
