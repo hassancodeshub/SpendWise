@@ -323,8 +323,10 @@ function drawPie() {
     var ctx = can.getContext('2d');
     ctx.clearRect(0,0,can.width,can.height);
     
-    var m = new Date().getMonth(); var y = new Date().getFullYear();
-    var cats = {}; var t_exp = 0;
+    var m = new Date().getMonth(); 
+    var y = new Date().getFullYear();
+    var cats = {}; 
+    var t_exp = 0;
     
     for(let i=0; i<db_state.txs.length; i++) {
         let t = db_state.txs[i];
@@ -340,7 +342,9 @@ function drawPie() {
     arr.sort(function(a,b){ return b.v - a.v; });
     
     if(arr.length==0) {
-        ctx.fillStyle = '#8AAB9E'; ctx.fillText("No data", 10, 20);
+        ctx.fillStyle = '#8AAB9E'; 
+        ctx.textAlign = 'left';
+        ctx.fillText("No data", 10, 20);
         document.getElementById('velocity-stats').innerHTML = '';
         return;
     }
@@ -348,13 +352,32 @@ function drawPie() {
     var max = arr[0].v;
     var w = (can.width / arr.length) - 10;
     
+    // Set text alignment to center so names and percentages align nicely with the bars
+    ctx.textAlign = "center";
+    
     for(let i=0; i<arr.length; i++) {
-        var h = (arr[i].v / max) * (can.height - 40);
+        // Leave 50px of breathing room at the top so percentages don't clip off the canvas
+        var h = (arr[i].v / max) * (can.height - 50);
+        
+        var barX = i * (w + 10) + 5;
+        var centerX = barX + (w / 2); // Calculates the exact middle of the current bar
+        
+        // Calculate the percentage
+        var pct = ((arr[i].v / t_exp) * 100).toFixed(0) + '%';
+        
+        // 1. Draw the Bar
         ctx.fillStyle = '#00C896';
-        ctx.fillRect(i*(w+10)+5, can.height - 30 - h, w, h);
+        ctx.fillRect(barX, can.height - 30 - h, w, h);
+        
+        // 2. Draw Full Category Name (Bottom)
         ctx.fillStyle = '#E0F2EC';
-        ctx.font = '10px Arial';
-        ctx.fillText(arr[i].n.substring(0,5), i*(w+10)+5, can.height - 10);
+        ctx.font = '11px system-ui, sans-serif';
+        ctx.fillText(arr[i].n, centerX, can.height - 10);
+        
+        // 3. Draw Percentage (Top)
+        ctx.fillStyle = '#8AAB9E';
+        ctx.font = 'bold 11px system-ui, sans-serif';
+        ctx.fillText(pct, centerX, can.height - 38 - h);
     }
     
     var v = t_exp / new Date().getDate();
